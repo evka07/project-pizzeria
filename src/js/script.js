@@ -58,7 +58,8 @@
             thisProduct.id = id;
             thisProduct.data = data;
             thisProduct.renderInMenu();
-            thisProduct.initOrderForm()
+            thisProduct.initOrderForm();
+            thisProduct.processOrder();
         }
 
         renderInMenu() {
@@ -67,18 +68,55 @@
             thisProduct.element = utils.createDOMFromHTML(generatedHTML);
             const menuContainer = document.querySelector(select.containerOf.menu)
             menuContainer.appendChild(thisProduct.element)
+            thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem)
         }
 
         initOrderForm() {
-            const thisProduct = this
-            thisProduct.formElement = thisProduct.element.querySelector(select.menuProduct.form)
-            thisProduct.formInput = thisProduct.formElement.querySelectorAll(select.all.formInputs)
+            const thisProduct = this;
+            thisProduct.formElement = thisProduct.element.querySelector(select.menuProduct.form);
+            thisProduct.formInputs = thisProduct.formElement.querySelectorAll(select.all.formInputs);
 
-            for (const input of thisProduct.formInput) {
+            for (const input of thisProduct.formInputs) {
                 input.addEventListener('change', function () {
-                    thisProduct.processOrder(); //Написать эту функцию processOrder()
-                })
+                    thisProduct.processOrder();
+                });
             }
+        }
+
+        processOrder() {
+            const thisProduct = this;
+            const formData = utils.serializeFormToObject(thisProduct.formElement);
+
+            let price = thisProduct.data.price;
+
+            for (const param in thisProduct.data.params) {
+                const paramValue = formData[param];
+
+                for (const option in thisProduct.data.params[param].options) {
+                    const optionData = thisProduct.data.params[param].options[option];
+
+                    if (paramValue && paramValue.includes(option)) {
+                        if (!optionData.default) {
+                            price += optionData.price;
+                        }
+                    } else {
+                        if (optionData.default) {
+                            price -= optionData.price;
+                        }
+                    }
+                }
+            }
+
+            thisProduct.priceSingle = price;
+            thisProduct.price = thisProduct.priceSingle * thisProduct.getAmount();
+            thisProduct.priceElem.innerHTML = thisProduct.price.toFixed(2);
+        }
+
+        getAmount() {
+            const thisProduct = this;
+            const amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
+            const input = amountWidgetElem.querySelector(select.widgets.amount.input);
+            return parseInt(input.value);
         }
     }
 
@@ -87,39 +125,39 @@
             const thisApp = this;
 
             for (const productData in dataSource.products) {
-                new Product(productData, dataSource.products[productData])
+                new Product(productData, dataSource.products[productData]);
             }
         },
         initData: function () {
             const thisApp = this;
-            thisApp.data = dataSource
+            thisApp.data = dataSource;
         },
 
         init: function () {
             const thisApp = this;
-            thisApp.initData()
-            thisApp.initMenu()
-            thisApp.initAccordion()
+            thisApp.initData();
+            thisApp.initMenu();
+            thisApp.initAccordion();
         },
         initAccordion: function () {
             const thisApp = this;
-            const productHeaders = document.querySelectorAll(select.menuProduct.clickable)
+            const productHeaders = document.querySelectorAll(select.menuProduct.clickable);
 
             for (const header of productHeaders) {
                 header.addEventListener('click', function () {
-                    const productElement = this.parentElement
-                    const activeProducts = document.querySelectorAll(select.all.menuProductsActive)
+                    const productElement = this.parentElement;
+                    const activeProducts = document.querySelectorAll(select.all.menuProductsActive);
 
                     for (const activeProduct of activeProducts) {
                         if (activeProduct !== productElement) {
-                            activeProduct.classList.remove(classNames.menuProduct.wrapperActive)
+                            activeProduct.classList.remove(classNames.menuProduct.wrapperActive);
                         }
                     }
-                    productElement.classList.toggle(classNames.menuProduct.wrapperActive)
-                })
+
+                    productElement.classList.toggle(classNames.menuProduct.wrapperActive);
+                });
             }
         },
-
     };
 
     app.init();
