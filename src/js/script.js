@@ -69,6 +69,7 @@
             const menuContainer = document.querySelector(select.containerOf.menu)
             menuContainer.appendChild(thisProduct.element)
             thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem)
+            thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper)
         }
 
         initOrderForm() {
@@ -88,14 +89,16 @@
             const formData = utils.serializeFormToObject(thisProduct.formElement);
 
             let price = thisProduct.data.price;
+            let optionImageVisible = false;
 
             for (const param in thisProduct.data.params) {
                 const paramValue = formData[param];
 
                 for (const option in thisProduct.data.params[param].options) {
                     const optionData = thisProduct.data.params[param].options[option];
+                    const optionSelected = formData[param] && formData[param].includes(option)
 
-                    if (paramValue && paramValue.includes(option)) {
+                    if (optionSelected) {
                         if (!optionData.default) {
                             price += optionData.price;
                         }
@@ -104,12 +107,27 @@
                             price -= optionData.price;
                         }
                     }
+                    const optionImage = thisProduct.imageWrapper.querySelector(`.${param}-${option}`)
+                    if (optionImage) {
+                        if (optionSelected){
+                            optionImage.classList.add(classNames.menuProduct.imageVisible)
+                            optionImageVisible = true;
+                        } else {
+                            optionImage.classList.remove(classNames.menuProduct.imageVisible)
+                        }
+                    }
                 }
             }
 
             thisProduct.priceSingle = price;
             thisProduct.price = thisProduct.priceSingle * thisProduct.getAmount();
             thisProduct.priceElem.innerHTML = thisProduct.price.toFixed(2);
+
+            if (!optionImageVisible) {
+                thisProduct.imageWrapper.classList.remove(classNames.menuProduct.imageVisible)
+            }else {
+                thisProduct.imageWrapper.classList.add(classNames.menuProduct.imageVisible)
+            }
         }
 
         getAmount() {
