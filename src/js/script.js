@@ -87,6 +87,7 @@
             thisWidget.announce()
         }
 
+
         initAction() {
             const thisWidget = this;
 
@@ -94,28 +95,17 @@
                 thisWidget.setValue(thisWidget.input.value)
             });
 
-            // thisWidget.element.addEventListener('click', function (event) {
-            //     const clickElement = event.target
-            //
-            //     if (clickElement === thisWidget.linkDecrease) {
-            //         event.preventDefault();
-            //         thisWidget.setValue(thisWidget.value - 1)
-            //     } else if (clickElement === thisWidget.linkIncrease) {
-            //         event.preventDefault()
-            //         thisWidget.setValue(thisWidget.value + 1)
-            //     }
-            // })
-
             thisWidget.linkDecrease.addEventListener('click', function (event) {
                 event.preventDefault()
                 thisWidget.setValue(thisWidget.value - 1)
-                thisWidget.announce()
+                thisWidget.input.dispatchEvent(new Event('change'))
             })
 
             thisWidget.linkIncrease.addEventListener('click', function (event) {
                 event.preventDefault()
                 thisWidget.setValue(thisWidget.value + 1)
                 thisWidget.announce()
+                thisWidget.input.dispatchEvent(new Event('change'))
             })
         }
         announce() {
@@ -214,10 +204,16 @@
         }
         initAmountWidget() {
             const thisProduct = this
-            const amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
+            const amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget)
 
             thisProduct.amountWidget = new AmountWidget(amountWidgetElem)
+
+            thisProduct.amountWidget.element.addEventListener("updated", function () {
+                thisProduct.processOrder()
+            })
+
         }
+
     }
 
     const app = {
