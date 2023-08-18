@@ -162,8 +162,8 @@
             thisProduct.initOrderForm();
             thisProduct.initAmountWidget();
             thisProduct.processOrder();
+            thisProduct.prepareCartProductParams()
         }
-
 
         renderInMenu() {
             const thisProduct = this;
@@ -196,6 +196,30 @@
 
         }
 
+        prepareCartProductParams() {
+            const thisProduct = this
+            const formData = utils.serializeFormToObject(thisProduct.formElement)
+
+            const cartProductParams = {}
+
+            for (const param in thisProduct.data.params) {
+                cartProductParams[param] = {
+                    label: thisProduct.data.params[param].label,
+                    options: {}
+                }
+
+                for (const option in thisProduct.data.params[param].options) {
+                    const optionData = thisProduct.data.params[param].options[option];
+                    const optionSelected = formData[param] && formData[param].includes(option)
+
+                    if (optionSelected) {
+                        cartProductParams[param].options[option] = optionData.label
+                    }
+                }
+            }
+            return cartProductParams
+        }
+
         addToCart() {
             const thisProduct = this;
 
@@ -204,6 +228,8 @@
                 data: thisProduct.data,
                 price: thisProduct.price,
                 amount: thisProduct.getAmount(),
+                name: thisProduct.data.name,
+                params:thisProduct.prepareCartProductParams()
             };
 
             app.cart.add(cartProduct);
