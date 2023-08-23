@@ -38,6 +38,7 @@
             toggleTrigger: '.cart__summary',
             totalNumber: `.cart__total-number`,
             totalPrice: '.cart__total-price strong, .cart__order-total .cart__order-price-sum strong',
+            totalPrices:'.cart__order-total .cart__order-price-sum strong',
             subtotalPrice: '.cart__order-subtotal .cart__order-price-sum strong',
             deliveryFee: '.cart__order-delivery .cart__order-price-sum strong',
             form: '.cart__order',
@@ -234,6 +235,8 @@
             };
 
             app.cart.add(cartProduct);
+            app.cart.updateSubtotal();
+            app.cart.updateTotalPrice();
         }
 
 
@@ -307,65 +310,97 @@
 
     class Cart {
         constructor(element) {
-            const thisCart = this;
-            thisCart.products = [];
-            thisCart.getElements(element);
-            thisCart.initActions();
+            this.products = [];
+            this.getElements(element);
+            this.initActions();
         }
 
         getElements(element) {
-            const thisCart = this;
-            thisCart.dom = {};
-            thisCart.dom.wrapper = element;
-            thisCart.dom.toggleTrigger = element.querySelector(select.cart.toggleTrigger);
-            thisCart.dom.productList = element.querySelector(select.cart.productList);
+            this.dom = {};
+            this.dom.wrapper = element;
+            this.dom.toggleTrigger = element.querySelector(select.cart.toggleTrigger);
+            this.dom.productList = element.querySelector(select.cart.productList);
+            this.dom.totalNumber = element.querySelector(select.cart.totalNumber);
+            this.dom.subtotalPrice = element.querySelector(select.cart.subtotalPrice);
+            this.dom.deliveryFee = element.querySelector(select.cart.deliveryFee);
+            this.dom.totalPrice = element.querySelector(select.cart.totalPrice);
+            this.dom.totalPrices = element.querySelector(select.cart.totalPrices)
         }
 
         initActions() {
-            const thisCart = this;
-
-            thisCart.dom.toggleTrigger.addEventListener('click', function () {
-                thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+            this.dom.toggleTrigger.addEventListener('click', () => {
+                this.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
             });
         }
 
+        updateSubtotal() {
+            const subtotalPrice = this.products.reduce((total, product) => total + product.price, 0);
+            this.dom.subtotalPrice.textContent = `${subtotalPrice.toFixed(2)}`;
+        }
 
-        add(cartProduct) {
-            const thisCart = this;
-            thisCart.products.push(cartProduct);
-            thisCart.updateCart();
+        updateTotalPrice() {
+            const deliveryFee = settings.cart.defaultDeliveryFee;
+            this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`;
 
-            const cartProductElement = templates.cartProduct(cartProduct)
-            const cartProductDOM = utils.createDOMFromHTML(cartProductElement)
-            const cartProductInstance = new CartProduct(cartProduct, cartProductDOM);
+            const totalPrice = this.products.reduce((total, product) => total + product.price, 0) + deliveryFee;
+            this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`;
         }
 
 
+        update() {
+            const deliveryFee = settings.cart.defaultDeliveryFee;
+
+            let totalNumber = 0;
+            let subtotalPrice = 0;
+
+            for (const product of this.products) {
+                totalNumber += product.amount;
+                subtotalPrice += product.price;
+            }
+
+            this.totalPrices = subtotalPrice + deliveryFee;
+
+            if (this.dom.totalNumber) {
+                this.dom.totalNumber.textContent = totalNumber;
+            }
+            if (this.dom.subtotalPrice) {
+                this.dom.subtotalPrice.textContent = `${subtotalPrice.toFixed(2)}`;
+            }
+            if (this.dom.deliveryFee) {
+                this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`;
+            }
+            if (this.dom.totalPrices) {
+                this.dom.totalPrices.textContent = `${this.totalPrices.toFixed(2)}`;
+            }
+        }
+
+        add(cartProduct) {
+            this.products.push(cartProduct);
+            this.update();
+            this.updateCart();
+
+            const cartProductElement = templates.cartProduct(cartProduct);
+            const cartProductDOM = utils.createDOMFromHTML(cartProductElement);
+            const cartProductInstance = new CartProduct(cartProduct, cartProductDOM);
+        }
+
         updateCart() {
-            const thisCart = this;
+            this.dom.productList.innerHTML = '';
 
-            thisCart.dom.productList.innerHTML = '';
-
-            for (const product of thisCart.products) {
+            for (const product of this.products) {
                 const generateHTML = templates.cartProduct(product);
                 const productElement = utils.createDOMFromHTML(generateHTML);
                 const cartProductInstance = new CartProduct(product, productElement);
 
-                thisCart.dom.productList.appendChild(productElement);
+                this.dom.productList.appendChild(productElement);
             }
 
-            const totalPrice = thisCart.products.reduce((total, product) => total + product.price, 0);
-            thisCart.dom.wrapper.querySelector(select.cart.totalPrice).textContent = `${totalPrice.toFixed(2)}`;
-        }
-        updateTotalPrice() {
-            const thisCart = this;
+            const totalPrice = this.products.reduce((total, product) => total + product.price, 0);
+            this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`;
 
-            const totalPrice = thisCart.products.reduce((total, product) => total + product.price, 0);
-            thisCart.dom.wrapper.querySelector(select.cart.totalPrice).textContent = `${totalPrice.toFixed(2)}`;
+            this.update();
         }
-
     }
-
 
     class CartProduct {
         constructor(menuProduct, element) {
@@ -430,6 +465,7 @@
 
 
             app.cart.updateCart();
+            app.cart.updateTotalPrice();
 
 
             if (oldAmount !== newQuantity) {
