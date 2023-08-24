@@ -340,29 +340,15 @@
         }
 
         updateTotalPrice() {
-            // const deliveryFee = settings.cart.defaultDeliveryFee;
-            let subtotalPrice = 0;
+            const deliveryFee = settings.cart.defaultDeliveryFee
+            const totalPrice = this.products.reduce((total, product) => total + product.price, 0) + deliveryFee
+            this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`
 
-            for (const product of this.products) {
-                subtotalPrice += product.price;
+            if (this.dom.deliveryFee) {
+                this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`
             }
-
-            const deliveryFee = this.products.length > 0 ? settings.cart.defaultDeliveryFee : 0
-
-            this.dom.subtotalPrice.textContent = `${subtotalPrice.toFixed(2)}`;
-            this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`;
-            this.dom.totalPrice.textContent = `${(subtotalPrice + deliveryFee).toFixed(2)}`;
-
-        // this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`;
-            //
-            // const totalPrice = this.products.reduce((total, product) => total + product.price, 0) + deliveryFee;
-            // this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`;
-            //
-            // if (this.products.length === 0) {
-            //     this.dom.totalPrice.textContent = '0'
-            //     this.dom.deliveryFee.textContent = '0'
-            // }
         }
+
 
 
         update() {
@@ -416,13 +402,8 @@
             const totalPrice = this.products.reduce((total, product) => total + product.price, 0);
             this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`;
 
-            if (this.products.length === 0) {
-                this.dom.deliveryFee.textContent = '0.00';
-            }
-
             this.update();
         }
-
         initRemoveButton() {
             const cart = this
             cart.dom.productList.addEventListener('click', function (event) {
@@ -528,8 +509,8 @@
             if (productIndex !== -1) {
                 cart.products.splice(productIndex, 1)
                 cart.update();
-                cart.updateTotalPrice();
                 cart.updateCart();
+                cart.updateTotalPrice();
             }
         }
 
