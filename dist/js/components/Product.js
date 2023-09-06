@@ -52,7 +52,8 @@ export default class Product {
 
         thisProduct.amountWidget = new AmountWidget(amountWidgetElem);
 
-        thisProduct.amountWidget.element.addEventListener('updated', function () {
+        thisProduct.amountWidget.dom.input.addEventListener('updated', function () {
+            console.log('updated');
             thisProduct.processOrder();
         });
     }
@@ -157,4 +158,3 @@ export default class Product {
         return parseInt(input.value);
     }
 }
-

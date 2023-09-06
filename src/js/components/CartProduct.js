@@ -5,6 +5,12 @@ import {app} from "../app.js";
 class CartProduct {
     constructor(menuProduct, element) {
         this.menuProduct = menuProduct;
+        this.id = menuProduct.id,
+            this.name = menuProduct.name,
+            this.amount = menuProduct.amount,
+            this.price = menuProduct.price,
+            this.params = menuProduct.params,
+            this.totalPrice = menuProduct.price * menuProduct.amount;
 
         if (element) {
             this.element = element;
@@ -79,21 +85,13 @@ class CartProduct {
 
         cartProduct.dom.remove.addEventListener('click', function (event) {
             event.preventDefault()
-            cartProduct.remove()
+            cartProduct.dom.wrapper.dispatchEvent(new CustomEvent('remove', {
+                bubbles: true,
+                detail: {
+                    cartProduct: cartProduct
+                }
+            }))
         })
-    }
-
-    remove() {
-        const cartProduct = this
-        const cart = app.cart
-
-        const productIndex = cart.products.indexOf(cartProduct.menuProduct)
-        if (productIndex !== -1) {
-            cart.products.splice(productIndex, 1)
-            cart.update();
-            cart.updateCart();
-            cart.updateTotalPrice();
-        }
     }
 
 }

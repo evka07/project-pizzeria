@@ -1,4 +1,6 @@
 import {classNames, select, settings, templates} from "../settings.js";
+import utils from '../utils.js';
+import CartProduct from "./CartProduct.js";
 
 export default class Cart {
     constructor(element) {
@@ -78,14 +80,7 @@ export default class Cart {
         /* add DOM elements to thisCart.dom.productList */
         thisCart.dom.productList.appendChild(generatedDOM);
 
-        thisCart.products.push({
-            id: menuProduct.id,
-            name: menuProduct.name,
-            amount: menuProduct.amount,
-            price: menuProduct.price,
-            params: menuProduct.params,
-            totalPrice: menuProduct.price * menuProduct.amount,
-        });
+        thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
 
         thisCart.update();
     }
@@ -107,13 +102,8 @@ export default class Cart {
     initRemoveButton() {
         const thisCart = this;
 
-        thisCart.dom.productList.addEventListener('click', function (event) {
-            const clickedElement = event.target;
-
-            if (clickedElement.classList.contains(classNames.cartProduct.remove)) {
-                const cartProduct = clickedElement.closest(select.cartProduct.wrapper);
-                thisCart.remove(cartProduct);
-            }
+        thisCart.dom.productList.addEventListener('remove', function (event) {
+            thisCart.remove(event.detail.cartProduct);
         });
     }
 }
