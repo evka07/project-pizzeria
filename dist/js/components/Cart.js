@@ -7,7 +7,7 @@ export default class Cart {
         this.products = [];
         this.getElements(element);
         this.initActions();
-        this.initRemoveButton();
+        this.initRemoveButton()
     }
 
     getElements(element) {
@@ -19,7 +19,7 @@ export default class Cart {
         this.dom.subtotalPrice = element.querySelector(select.cart.subtotalPrice);
         this.dom.deliveryFee = element.querySelector(select.cart.deliveryFee);
         this.dom.totalPrice = element.querySelector(select.cart.totalPrice);
-        this.dom.totalPrices = element.querySelector(select.cart.totalPrices);
+        this.dom.totalPrices = element.querySelector(select.cart.totalPrices)
     }
 
     initActions() {
@@ -34,14 +34,16 @@ export default class Cart {
     }
 
     updateTotalPrice() {
-        const deliveryFee = settings.cart.defaultDeliveryFee;
-        const totalPrice = this.products.reduce((total, product) => total + product.price, 0) + deliveryFee;
-        this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`;
+        const deliveryFee = settings.cart.defaultDeliveryFee
+        const totalPrice = this.products.reduce((total, product) => total + product.price, 0) + deliveryFee
+        this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`
 
         if (this.dom.deliveryFee) {
-            this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`;
+            this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`
         }
     }
+
+
 
     update() {
         const deliveryFee = settings.cart.defaultDeliveryFee;
@@ -65,45 +67,49 @@ export default class Cart {
         if (this.dom.deliveryFee) {
             this.dom.deliveryFee.textContent = `${deliveryFee.toFixed(2)}`;
         }
-        if (this.dom.totalPrice) {
-            this.dom.totalPrice.textContent = `${this.totalPrices.toFixed(2)}`;
+        if (this.dom.totalPrices) {
+            this.dom.totalPrices.textContent = `${this.totalPrices.toFixed(2)}`;
         }
     }
 
-    add(menuProduct) {
-        const thisCart = this;
+    add(cartProduct) {
+        this.products.push(cartProduct);
+        this.update();
+        this.updateCart();
 
-        /* generate HTML based on template */
-        const generatedHTML = templates.cartProduct(menuProduct);
-        const generatedDOM = utils.createDOMFromHTML(generatedHTML);
-
-        /* add DOM elements to thisCart.dom.productList */
-        thisCart.dom.productList.appendChild(generatedDOM);
-
-        thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
-
-        thisCart.update();
+        const cartProductElement = templates.cartProduct(cartProduct);
+        const cartProductDOM = utils.createDOMFromHTML(cartProductElement);
+        const cartProductInstance = new CartProduct(cartProduct, cartProductDOM);
     }
 
-    remove(cartProduct) {
-        const thisCart = this;
+    updateCart() {
+        this.dom.productList.innerHTML = '';
 
-        const indexOfCartProduct = thisCart.products.findIndex(
-            product => product.id === cartProduct.id
-        );
+        for (const product of this.products) {
+            const generateHTML = templates.cartProduct(product);
+            const productElement = utils.createDOMFromHTML(generateHTML);
+            const cartProductInstance = new CartProduct(product, productElement);
 
-        if (indexOfCartProduct !== -1) {
-            cartProduct.dom.wrapper.remove();
-            thisCart.products.splice(indexOfCartProduct, 1);
-            thisCart.update();
+            this.dom.productList.appendChild(productElement);
         }
-    }
 
+        const totalPrice = this.products.reduce((total, product) => total + product.price, 0);
+        this.dom.totalPrice.textContent = `${totalPrice.toFixed(2)}`;
+
+        this.update();
+    }
     initRemoveButton() {
-        const thisCart = this;
+        const cart = this
+        cart.dom.productList.addEventListener('click', function (event) {
+            const clickedElement = event.target
 
-        thisCart.dom.productList.addEventListener('remove', function (event) {
-            thisCart.remove(event.detail.cartProduct);
-        });
+            if (clickedElement.matches(select.cartProduct.remove)) {
+                const cartProductElement = clickedElement.closest(select.cartProduct.wrapper)
+                if (cartProductElement) {
+                    const cartProductInstance = cartProductElement.cartProduct
+                    cartProductInstance.remove()
+                }
+            }
+        })
     }
 }
