@@ -1,6 +1,7 @@
 import Product from "./components/Product.js";
 import Cart from "./components/Cart.js";
 import {settings, select, classNames} from "./settings.js";
+import Booking from "./components/Booking.js";
 
 export const app = {
 
@@ -137,6 +138,7 @@ export const app = {
         thisApp.initCart();
         thisApp.initAccordion();
         thisApp.initPages()
+        thisApp.initBooking()
     },
     initAccordion: function () {
         const productHeaders = document.querySelectorAll(select.menuProduct.clickable);
@@ -157,8 +159,11 @@ export const app = {
             });
         }
     },
-
-
+    initBooking: function () {
+        const thisApp = this
+        const bookingContainer = document.querySelector(select.containerOf.booking)
+        new Booking(bookingContainer)
+    }
 };
 
 app.init();
