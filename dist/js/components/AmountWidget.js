@@ -1,35 +1,36 @@
 import {select, settings} from "../settings.js";
+import BaseWidget from "./BaseWidget.js";
 
-class AmountWidget {
+class AmountWidget extends BaseWidget{
     constructor(element) {
+        super(element, settings.amountWidget.defaultValue);
+
         const thisWidget = this;
 
         thisWidget.getElements(element);
-        thisWidget.setValue(thisWidget.dom.input.value || settings.amountWidget.defaultValue);
+        // thisWidget.setValue(thisWidget.dom.input.value || settings.amountWidget.defaultValue);
         thisWidget.initActions();
     }
 
-    getElements(element) {
+    getElements() {
         const thisWidget = this;
 
         thisWidget.dom = {};
         thisWidget.dom.wrapper = element;
-        thisWidget.dom.input = element.querySelector(select.widgets.amount.input);
-        thisWidget.dom.linkDecrease = element.querySelector(select.widgets.amount.linkDecrease);
-        thisWidget.dom.linkIncrease = element.querySelector(select.widgets.amount.linkIncrease);
+        thisWidget.dom.input = thisWidget.dom.wrapper.querySelector(select.widgets.amount.input);
+        thisWidget.dom.linkDecrease = thisWidget.dom.wrapper.querySelector(select.widgets.amount.linkDecrease);
+        thisWidget.dom.linkIncrease = thisWidget.dom.wrapper.querySelector(select.widgets.amount.linkIncrease);
     }
 
-    setValue(value) {
-        const thisWidget = this;
 
-        const newValue = parseInt(value);
 
-        if (newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
-            thisWidget.value = newValue;
-            thisWidget.dom.input.value = newValue;
-            thisWidget.announce();
-        }
+    isValid(value){
+        return !isNaN(value)
+            &&value >= settings.amountWidget.defaultMin
+            && value <= settings.amountWidget.defaultMax
     }
+
+
 
     initActions() {
         const thisWidget = this;
@@ -49,12 +50,6 @@ class AmountWidget {
         });
     }
 
-    announce() {
-        const thisWidget = this;
-
-        const event = new Event('updated');
-        thisWidget.dom.input.dispatchEvent(event);
-    }
 }
 
 export default AmountWidget;
