@@ -10,24 +10,11 @@ class Booking {
 
         this.render(element);
         this.initWidgets();
-        this.initFlatpickr();
-        this.initRangeSlider();
         this.getData();
-        // this.initTables()
-        // this.initActions()
+        this.initTables()
+        this.initActions()
 
     }
-
-//      class Booking{
-//         constructor(wrapper) {
-//             const thisBooking = this;
-//
-//             thisBooking.render(wrapper);
-//             thisBooking.initWidgets;
-//             thisBooking.getData();
-//         }
-// }
-// module 11.2
 
 
     getData(){
@@ -101,10 +88,11 @@ class Booking {
         const minDate = thisBooking.datePicker.minDate;
         const maxDate = thisBooking.datePicker.maxDate;
 
+
         for(let item of eventsRepeat){
             if(item.repeat == 'daily'){
                 for(let loopDate = minDate; loopDate <= maxDate; loopDate = utils.addDays(loopDate, 1)){
-                    thisBooking.makeBooked(utils.dateToStr(loopDate), item.date, item.hour, item.duration, item.table);
+                    thisBooking.makeBooked(utils.dateToStr(loopDate), item.hour, item.duration, item.table);
                 }
             }
         }
@@ -115,7 +103,10 @@ class Booking {
         const thisBooking = this;
 
         thisBooking.date = thisBooking.datePicker.value;
-        thisBooking.hour = thisBooking.hourPicker.value
+        thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
+        console.log('date', thisBooking.date);
+        console.log('hour', thisBooking.hour);
+        console.log('thisBooking.booked', thisBooking.booked);
 
         let allAvailable = false;
 
@@ -134,7 +125,7 @@ class Booking {
             }
             if(!allAvailable
                 &&
-                thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId) > -1
+                thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId)
             ){
                 table.classList.add(classNames.booking.tableBooked);
             } else {
@@ -172,6 +163,9 @@ class Booking {
         this.dom.hoursAmount = document.querySelector(select.booking.hoursAmount);
         this.dom.datePicker = thisBooking.dom.wrapper.querySelector(select.widgets.datePicker.wrapper);
         this.dom.tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables);
+        this.dom.form = thisBooking.dom.wrapper.querySelector(select.booking.form);
+        this.dom.phone = thisBooking.dom.wrapper.querySelector(select.booking.phone);
+        this.dom.address = thisBooking.dom.wrapper.querySelector(select.booking.address);
     }
 
     initWidgets() {
@@ -183,126 +177,77 @@ class Booking {
         thisBooking.hourPicker = new HourPicker(this.dom.wrapper);
 
         thisBooking.dom.wrapper.addEventListener('updated', function (){
+            console.log('updated');
             thisBooking.updateDOM();
         });
-    }
-
-    initFlatpickr() {
-        const thisBooking = this;
-        const dateInput = thisBooking.dom.datePicker.querySelector(select.widgets.datePicker.input);
-
-        flatpickr(dateInput, {
-            enableTime: false,
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            maxDate: new Date().fp_incr(14),
-            onChange: function (selectedDates, dateStr) {
-
-            },
-        });
-    }
-
-    initRangeSlider() {
-        const thisBooking = this;
-        const sliderElement = thisBooking.dom.wrapper.querySelector(select.widgets.hourPicker.input);
-        const minHours = settings.hours.open;
-        const maxHours = settings.hours.close;
-
-        noUiSlider.create(sliderElement, {
-            start: [minHours, maxHours],
-            step: 0.5,
-            range: {
-                min: minHours,
-                max: maxHours,
-            },
-            format: {
-                to: function (value) {
-                    return value.toFixed(1);
-                },
-                from: function (value) {
-                    return parseFloat(value);
-                },
-            },
-        });
-
-        sliderElement.noUiSlider.on("update", function (values, handle) {
-            if (handle === 0) {
-                thisBooking.hoursAmountWidget.setValue(values[0]);
-            } else {
-                thisBooking.hoursAmountWidget.setValue(values[1]);
-            }
-        });
 
     }
-    // initTables() {
-    //     const thisBooking = this
-    //     const tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables)
-    //
-    //     tables.forEach((table) => {
-    //         table.addEventListener('click', function () {
-    //             if (!table.classList.contains(classNames.booking.tableBooked)) {
-    //                 thisBooking.selectTable(table)
-    //             }
-    //         })
-    //     })
-    // }
-    //
-    // selectTable(table) {
-    //     const thisBooking = this
-    //
-    //     if (thisBooking.selectedTable) {
-    //         thisBooking.selectedTable.classList.remove(classNames.booking.tableBooked)
-    //     }
-    //     thisBooking.selectedTable = table
-    //     thisBooking.selectedTable.classList.add(classNames.booking.tableBooked)
-    // }
-    //
-    // sendBooking() {
-    //     const thisBooking = this
-    //
-    //     if (!thisBooking.selectedTable) {
-    //         alert("Viberi stol")
-    //         return
-    //     }
-    //     const bookingData = {
-    //         date: thisBooking.datePickerWidget.value,
-    //         hour: thisBooking.hourPickerWidget.value,
-    //         table: thisBooking.selectedTable.getAttribute("data-table"),
-    //         duration: thisBooking.hourPickerWidget.value,
-    //         ppl: thisBooking.peopleAmountWidget.value,
-    //         phone: thisBooking.dom.phone.value,
-    //         address: thisBooking.dom.address.value,
-    //     }
-    //
-    //     fetch("http://localhost:3131/bookings", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify(bookingData)
-    //     })
-    //         .then((response => {
-    //             if (response.status === 200) {
-    //                 console.log("Good")
-    //             } else  {
-    //                 console.log("error bad")
-    //             }
-    //         })
-    //             .catch((error) => {
-    //                 console.error("Error", error)
-    //             })
-    //         )
-    // }
-    //
-    // initActions() {
-    //     const thisBooking = this
-    //     const bookButton = thisBooking.dom.wrapper.querySelector(select.booking.bookTable)
-    //
-    //     bookButton.addEventListener("click", function (event) {
-    //         event.preventDefault()
-    //         thisBooking.sendBooking()
-    //     })
-    // }
+
+
+    initTables() {
+        const thisBooking = this
+        const tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables)
+
+        tables.forEach((table) => {
+            table.addEventListener('click', function () {
+                if (!table.classList.contains(classNames.booking.tableBooked)) {
+                    thisBooking.selectTable(table)
+                }
+            })
+        })
+    }
+
+    selectTable(table) {
+        const thisBooking = this
+
+        if (thisBooking.selectedTable) {
+            thisBooking.selectedTable.classList.remove(classNames.booking.tableSelected)
+        }
+
+        if(!thisBooking.selectedTable || thisBooking.selectedTable != table){
+            thisBooking.selectedTable = table;
+            thisBooking.selectedTable.classList.add(classNames.booking.tableSelected)
+        } else {
+            thisBooking.selectedTable = null;
+        }
+
+    }
+
+    sendBooking() {
+        const thisBooking = this
+
+        if (!thisBooking.selectedTable) {
+            alert("Viberi stol")
+            return
+        }
+
+        const bookingData = {
+            date: thisBooking.datePicker.value,
+            hour: thisBooking.hourPicker.value,
+            table: thisBooking.selectedTable.getAttribute("data-table"),
+            duration: thisBooking.hoursAmountWidget.value,
+            ppl: thisBooking.peopleAmountWidget.value,
+            phone: thisBooking.dom.phone.value,
+            address: thisBooking.dom.address.value,
+        }
+
+        fetch("http://localhost:3131/bookings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(bookingData)
+        })
+    }
+
+    initActions() {
+        const thisBooking = this
+
+        thisBooking.dom.form.addEventListener("submit", function (event) {
+            event.preventDefault()
+            thisBooking.sendBooking()
+        });
+    }
 }
 
 export default Booking;

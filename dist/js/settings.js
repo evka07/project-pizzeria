@@ -44,6 +44,9 @@ export const select = {
         peopleAmount: '.people-amount',
         hoursAmount: '.hours-amount',
         tables: '.floor-plan .table',
+        form: '.booking-form',
+        phone: '.order-confirmation [type="tel"]',
+        address: '.order-confirmation [type="text"]',
         // bookTable: '.btn-secondary',
     },
     nav: {
@@ -85,6 +88,7 @@ export const classNames = {
     booking: {
         loading: 'loading',
         tableBooked: 'booked',
+        tableSelected: 'selected',
     },
     nav: {
         active: 'active',
