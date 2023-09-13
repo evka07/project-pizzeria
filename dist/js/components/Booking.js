@@ -13,8 +13,8 @@ class Booking {
         this.initFlatpickr();
         this.initRangeSlider();
         this.getData();
-        this.initTables()
-        this.initActions()
+        // this.initTables()
+        // this.initActions()
 
     }
 
@@ -50,16 +50,16 @@ class Booking {
             eventsRepeat: [
                 settings.db.repeatParam,
                 endDateParam,
-        ]
+            ]
         }
 
         const urls = {
             bookings:       settings.db.url + '/' + settings.db.bookings
-                                            + '?' + params.bookings.join('&'),
-            eventsCurrent:  settings.db.url + '/' + settings.db.event
-                                            + '?' + params.eventsCurrent.join('&'),
-            eventsRepeat:   settings.db.url + '/' + settings.db.event
-                                            + '?' + params.eventsRepeat.join('&'),
+                + '?' + params.bookings.join('&'),
+            eventsCurrent:  settings.db.url + '/' + settings.db.events
+                + '?' + params.eventsCurrent.join('&'),
+            eventsRepeat:   settings.db.url + '/' + settings.db.events
+                + '?' + params.eventsRepeat.join('&'),
         };
         Promise.all([
             fetch(urls.bookings),
@@ -70,12 +70,12 @@ class Booking {
                 const bookingsResponse = allResponses[0];
                 const eventsCurrentResponse = allResponses[1];
                 const eventsRepeatResponse = allResponses[2];
-            return Promise.all([
-                bookingsResponse.json(),
-                eventsCurrentResponse.json(),
-                eventsRepeatResponse.json(),
-            ]);
-        })
+                return Promise.all([
+                    bookingsResponse.json(),
+                    eventsCurrentResponse.json(),
+                    eventsRepeatResponse.json(),
+                ]);
+            })
             .then(function ([bookings, eventsCurrent, eventsRepeat]){
                 // console.log(bookings);
                 // console.log(eventsCurrent);
@@ -111,11 +111,11 @@ class Booking {
         thisBooking.updateDOM();
     }
 
-    updateDOM(){I
+    updateDOM(){
         const thisBooking = this;
 
         thisBooking.date = thisBooking.datePicker.value;
-        thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
+        thisBooking.hour = thisBooking.hourPicker.value
 
         let allAvailable = false;
 
@@ -127,20 +127,20 @@ class Booking {
             allAvailable = true;
         }
 
-            for(let table of thisBooking.dom.tables){
-                let tableId = table.getAttribute(settings.booking.tableIdAttribute);
-                if (!isNaN(tableId)){
-                    tableId = parseInt(tableId);
-                }
-                if(!allAvailable
-                    &&
-                    thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId) > -1
-                ){
-                    table.classList.add(classNames.booking.tableBooked);
-                } else {
-                    table.classList.remove(classNames.booking.tableBooked);
-                }
+        for(let table of thisBooking.dom.tables){
+            let tableId = table.getAttribute(settings.booking.tableIdAttribute);
+            if (!isNaN(tableId)){
+                tableId = parseInt(tableId);
             }
+            if(!allAvailable
+                &&
+                thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId) > -1
+            ){
+                table.classList.add(classNames.booking.tableBooked);
+            } else {
+                table.classList.remove(classNames.booking.tableBooked);
+            }
+        }
     }
 
     makeBooked(date, hour, duration, table){
@@ -171,6 +171,7 @@ class Booking {
         this.dom.peopleAmount = document.querySelector(select.booking.peopleAmount);
         this.dom.hoursAmount = document.querySelector(select.booking.hoursAmount);
         this.dom.datePicker = thisBooking.dom.wrapper.querySelector(select.widgets.datePicker.wrapper);
+        this.dom.tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables);
     }
 
     initWidgets() {
@@ -178,8 +179,8 @@ class Booking {
         thisBooking.peopleAmountWidget = new AmountWidget(this.dom.peopleAmount);
         thisBooking.hoursAmountWidget = new AmountWidget(this.dom.hoursAmount);
 
-        thisBooking.datePickerWidget = new DatePicker(this.dom.datePicker);
-        thisBooking.hourPickerWidget = new HourPicker(this.dom.wrapper);
+        thisBooking.datePicker = new DatePicker(this.dom.datePicker);
+        thisBooking.hourPicker = new HourPicker(this.dom.wrapper);
 
         thisBooking.dom.wrapper.addEventListener('updated', function (){
             thisBooking.updateDOM();
