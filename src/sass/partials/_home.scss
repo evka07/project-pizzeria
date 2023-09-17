@@ -1,0 +1,228 @@
+p {
+  padding: 0;
+  margin: 0;
+}
+
+.home {
+  &__container {
+    height: 1250px;
+  }
+
+  &__navigation {
+    &__links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 50px;
+    }
+
+    &__link {
+      width: 50%;
+      text-align: center;
+      position: relative;
+      height: 120px;
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 5px;
+    }
+    &__link:nth-child(1) {
+      background: url("../../assets/pizza-1.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
+    &__link:nth-child(2) {
+      background: url("../../assets/pizza-2.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
+    &__link a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      position: absolute;
+      top: 37%;
+      left: 0;
+      right: 0;
+      transition: 0.5s;
+    }
+
+    &__link a:hover {
+      top: 30%;
+    }
+
+    &__hours {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      background: #ff6b6b;
+      padding: 10px 60px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 5px;
+    }
+
+    &__imgage {
+      border-radius: 5px;
+    }
+  }
+  &__slide {
+    margin-bottom: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    &__img {
+      background: #333;
+      width: 50%;
+      height: 250px;
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      width: 50%;
+    }
+
+    &__title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    &__text {
+      font-size: 15px;
+      color: gray;
+    }
+
+    &__author {
+      font-size: 15px;
+      font-style: italic;
+    }
+
+  }
+  &__cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 80px;
+  }
+
+  &__card {
+
+    &__item {
+      width: 32.8%;
+      height: 216px;
+      position: relative;
+      transition: 0.5s;
+    }
+
+    &__item:nth-child(1) {
+      background: url("../../assets/pizza-4.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+
+    } &__item:nth-child(2) {
+      background: url("../../assets/pizza-5.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+
+    } &__item:nth-child(3) {
+      background: url("../../assets/pizza-6.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+
+    } &__item:nth-child(4) {
+      background: url("../../assets/pizza-7.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+
+    } &__item:nth-child(5) {
+      background: url("../../assets/pizza-8.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+
+    } &__item:nth-child(6) {
+      background-image: url("../../assets/pizza-9.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+
+    }
+  }
+
+  &__nav {
+    &__link {
+    }
+  }
+
+}
+
+.nav {
+  &__image {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+  }
+}
+
+.swiper {
+  margin-top: 70px;
+}
+
+.row {
+  padding-top: 80px;
+}
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  transition: 0.5s;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 216px;
+  border-radius: 5px;
+}
+
+.icon {
+  position: absolute;
+  left: 38%;
+  top: 40%;
+  font-size: 25px;
+  opacity: 0;
+  transition: 0.5s;
+}
+
+
+.home__card__item:hover .icon {
+  opacity: 1;
+}
+
+.card:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.home__nav__link a {
+  color: red;
+}
